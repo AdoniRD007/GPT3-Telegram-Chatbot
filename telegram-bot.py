@@ -4,12 +4,6 @@ from datetime import datetime
 import json, os, string, sys, threading, logging, time, re, random
 import openai
 
-##########
-#Settings#
-##########
-
-#You can also set these environment variables for docker
-
 #OpenAI API key
 aienv = os.getenv('OPENAI_KEY')
 if aienv == None:
@@ -41,8 +35,8 @@ running = False
 cache = None
 qcache = None
 chat_log = None
-botname = 'AI'
-username = 'Human'
+botname = '[A]don[I]'
+username = 'AdonisRD_Bot'
 # Max chat log length (A token is about 4 letters and max tokens is 2048)
 max = int(3000)
 
@@ -226,8 +220,8 @@ def ask(username, botname, question, chat_log=None):
     t = '[' + ampm + '] '
     prompt = f'{chat_log}{t}{username}: {question}\n{t}{botname}:'
     response = completion.create(
-        prompt=prompt, engine="davinci", stop=['\n'], temperature=0.9,
-        top_p=1, frequency_penalty=15, presence_penalty=2, best_of=3,
+        prompt=prompt, engine="text-davinci-001", stop=['\n'], temperature=0.9,
+        top_p=1, frequency_penalty=0, presence_penalty=0.6, best_of=3,
         max_tokens=250)
     answer = response.choices[0].text.strip()
     return answer
@@ -256,7 +250,7 @@ def interact(bot, update, botname, username, new):
             print("Sentiment of input:\n")
             print(vs)
         if vs['neg'] > 1:
-            update.message.reply_text('Input text is not positive. Input text must be of positive sentiment/emotion.')
+            update.message.reply_text('Can we talk something else?')
             return
     if new == True:
         if debug == True:
@@ -285,7 +279,7 @@ def interact(bot, update, botname, username, new):
             print("Sentiment of output:\n")
             print(vs)
         if vs['neg'] > 1:
-            update.message.reply_text('Output text is not positive. Censoring. Use /retry to get positive output.')
+            update.message.reply_text('I do not think I could provide you a good answer for this. Use /retry to get positive output.')
             return
         update.message.reply_text(out)
         chat_log = append_interaction_to_chat_log(username, botname, question, answer, chat_log)
@@ -298,9 +292,6 @@ def interact(bot, update, botname, username, new):
             print(e)
             errstr = str(e)
             update.message.reply_text(errstr)
-#####################
-# End main functions#
-#####################
 
 
 def error(bot, update):
@@ -310,9 +301,7 @@ def error(bot, update):
 
 def main():
     """Start the bot."""
-    # Create the Updater and pass it your bot's token.
-    # Make sure to set use_context=True to use the new context based callbacks
-    # Post version 12 this will no longer be necessary
+
     updater = Updater(tgkey, use_context=False)
     # Get the dispatcher to register handlers
     dp = updater.dispatcher
@@ -327,9 +316,7 @@ def main():
     dp.add_error_handler(error)
     # Start the Bot
     updater.start_polling()
-    # Run the bot until you press Ctrl-C or the process receives SIGINT,
-    # SIGTERM or SIGABRT. This should be used most of the time, since
-    # start_polling() is non-blocking and will stop the bot gracefully.
+   
     updater.idle()
 
 
